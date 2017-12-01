@@ -1,0 +1,4 @@
+/day*/target
+*.idea
+*Cargo.lock
+**/*.rs.bk
