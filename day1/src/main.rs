@@ -19,7 +19,7 @@ fn sum_inc(input: &str) -> usize {
         }
         previous = c;
     }
-    if previous == input.chars().nth(0).unwrap() {
+    if previous == input.as_bytes()[0] as char {
         total += previous as usize - 48;
     }
     total
@@ -30,15 +30,8 @@ fn sum_half(input: &str) -> usize {
     let len = input.len();
     let steps_forward = len / 2;
     for (i, c) in input.chars().enumerate() {
-        let n =
-            if i + steps_forward >= len {
-                steps_forward - (len - i)
-            }
-            else {
-                i + steps_forward
-            }
-        ;
-        if c == input.chars().nth(n).unwrap() {
+        let n = if i + steps_forward >= len { steps_forward - (len - i) } else { i + steps_forward };
+        if c == input.as_bytes()[n] as char {
             total += c as usize - 48;
         }
     }
