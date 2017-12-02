@@ -4,7 +4,13 @@ const TEST_INPUT2: &'static str = "1111";
 const TEST_INPUT3: &'static str = "1234";
 const TEST_INPUT4: &'static str = "91212129";
 
-fn sum(input: &str) -> usize {
+const TEST_INPUT5: &'static str = "1212";
+const TEST_INPUT6: &'static str = "1221";
+const TEST_INPUT7: &'static str = "123425";
+const TEST_INPUT8: &'static str = "123123";
+const TEST_INPUT9: &'static str = "12131415";
+
+fn sum_inc(input: &str) -> usize {
     let mut total = 0usize;
     let mut previous: char = 0 as char;
     for c in input.chars() {
@@ -19,11 +25,37 @@ fn sum(input: &str) -> usize {
     total
 }
 
-fn main() {
+fn sum_half(input: &str) -> usize {
+    let mut total = 0usize;
+    let len = input.len();
+    let steps_forward = len / 2;
+    for (i, c) in input.chars().enumerate() {
+        let n =
+            if i + steps_forward >= len {
+                steps_forward - (len - i)
+            }
+            else {
+                i + steps_forward
+            }
+        ;
+        if c == input.chars().nth(n).unwrap() {
+            total += c as usize - 48;
+        }
+    }
+    total
+}
 
-    println!("{}", sum(TEST_INPUT1).to_string());
-    println!("{}", sum(TEST_INPUT2).to_string());
-    println!("{}", sum(TEST_INPUT3).to_string());
-    println!("{}", sum(TEST_INPUT4).to_string());
-    println!("{}", sum(INPUT).to_string());
+fn main() {
+    println!("{}", sum_inc(TEST_INPUT1).to_string());
+    println!("{}", sum_inc(TEST_INPUT2).to_string());
+    println!("{}", sum_inc(TEST_INPUT3).to_string());
+    println!("{}", sum_inc(TEST_INPUT4).to_string());
+    println!("{}", sum_inc(INPUT).to_string());
+
+    println!("{}", sum_half(TEST_INPUT5).to_string());
+    println!("{}", sum_half(TEST_INPUT6).to_string());
+    println!("{}", sum_half(TEST_INPUT7).to_string());
+    println!("{}", sum_half(TEST_INPUT8).to_string());
+    println!("{}", sum_half(TEST_INPUT9).to_string());
+    println!("{}", sum_half(INPUT).to_string());
 }
