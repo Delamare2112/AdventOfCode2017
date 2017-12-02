@@ -14,9 +14,13 @@ const INPUT: &'static str = "1224	926	1380	688	845	109	118	88	1275	1306	91	796	1
 543	462	111	459	107	353	2006	116	2528	56	2436	1539	1770	125	2697	2432
 1356	208	5013	4231	193	169	3152	2543	4430	4070	4031	145	4433	4187	4394	1754
 5278	113	4427	569	5167	175	192	3903	155	1051	4121	5140	2328	203	5653	3233";
-const TEST_INPUT: &'static str = "5 1 9 5
+
+const TEST_INPUT1: &'static str = "5 1 9 5
 7 5 3
 2 4 6 8";
+const TEST_INPUT2: &'static str = "5 9 2 8
+9 4 7 3
+3 8 6 5";
 
 fn checksum(input: &str) -> usize {
     let mut sum = 0usize;
@@ -27,7 +31,30 @@ fn checksum(input: &str) -> usize {
     sum
 }
 
+fn div_sum(input: &str) -> usize {
+    let mut sum = 0usize;
+    for line in input.lines() {
+        let row: Vec<usize> = line.split_whitespace().map(|x| usize::from_str_radix(x,10).unwrap()).collect();
+        for (i, x) in row.iter().enumerate() {
+            let mut others = row.iter();
+            others.nth(i);
+            for other in others {
+                if x % other == 0 {
+                    sum += x / other;
+                }
+                else if other % x == 0{
+                    sum += other / x;
+                }
+            }
+        }
+    }
+    sum
+}
+
 fn main() {
-    println!("{}", checksum(TEST_INPUT));
+    println!("{}", checksum(TEST_INPUT1));
     println!("{}", checksum(INPUT));
+
+    println!("{}", div_sum(TEST_INPUT2));
+    println!("{}", div_sum(INPUT));
 }
