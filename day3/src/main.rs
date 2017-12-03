@@ -8,7 +8,7 @@ fn get_manhattan_distance(loc: usize) -> usize {
     let loc = loc as f32;
 
     // essentially this is the length of a square in the spiral.
-    let mut base = (loc).sqrt().ceil();
+    let mut base = loc.sqrt().ceil();
     if base % 2f32 == 0f32 {
         base += 1f32;
     }
