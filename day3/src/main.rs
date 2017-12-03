@@ -6,20 +6,23 @@ const I1: usize = 361527;
 
 fn get_manhattan_distance(loc: usize) -> usize {
     let loc = loc as f32;
+
+    // essentially this is the length of a square in the spiral.
     let mut base = (loc).sqrt().ceil();
     if base % 2f32 == 0f32 {
         base += 1f32;
     }
 
-    let max = base.powi(2);
-    let inside_dist = (base / 2f32).floor();
-    let mid_dist = inside_dist + 1f32;
-    let mut min = max - base;
-    loop {
-        if loc > min {
+    let max = base.powi(2); // max value of the square.
+    let inside_dist = (base / 2f32).floor(); // how far out is this square?
+    let mid_dist = inside_dist + 1f32; // what is the midpoint distance of this edge?
+    let mut min = max - base; // what is the min vertex of this edge?
+    loop { // check all edges of the square for `loc`
+        if loc > min { // is `loc` on this edge of the square?
+            // return `inside_dist` + distance from loc and midpoint.
             return (inside_dist + (loc - (min + mid_dist)).abs()) as usize
         }
-        min = min - (base - 1f32);
+        min = min - (base - 1f32); // continue to the next edge of the square.
     }
 }
 
@@ -69,6 +72,7 @@ fn get_next_largest(num: usize) -> usize {
     let mut grid: Vec<Vec<usize>> = vec![vec![0; size]; size];
     let mid = size / 2;
     let mut player = Player {position: Point {x: mid, y: mid}, direction: direction::EAST};
+
     grid[player.position.x][player.position.y] = 1;
     player.move_forward(1);
 
@@ -77,7 +81,7 @@ fn get_next_largest(num: usize) -> usize {
     let mut rotations = 1usize;
     loop {
         // check around thy self
-        grid[player.position.x][player.position.y] =
+        let new_val =
             grid[player.position.x + 1][player.position.y] +
             grid[player.position.x + 1][player.position.y + 1] +
             grid[player.position.x + 1][player.position.y - 1] +
@@ -86,10 +90,11 @@ fn get_next_largest(num: usize) -> usize {
             grid[player.position.x - 1][player.position.y + 1] +
             grid[player.position.x - 1][player.position.y - 1] +
             grid[player.position.x][player.position.y - 1];
+        grid[player.position.x][player.position.y] = new_val;
 
         // are we large enough yet?
-        if grid[player.position.x][player.position.y] > num {
-            return grid[player.position.x][player.position.y];
+        if new_val > num {
+            return new_val;
         }
 
         // rotate if we need to.
