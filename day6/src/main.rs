@@ -1,5 +1,5 @@
 
-fn solve_1(input: &mut Vec<usize>) -> usize {
+fn solve(input: &mut Vec<usize>) -> usize {
     let mut count = 0usize;
     let mut states: Vec<Vec<usize>> = Vec::new();
 
@@ -33,8 +33,8 @@ fn solve_1(input: &mut Vec<usize>) -> usize {
 fn main() {
     let mut input: Vec<usize> = vec![11,11,13,7,0,15,5,5,4,4,1,1,7,1,15,11];
     let mut test_input: Vec<usize> = vec![0,2,7,0];
-    println!("{}", solve_1(&mut test_input));
-    println!("{}", solve_1(&mut test_input));
-    println!("{}", solve_1(&mut input));
-    println!("{}", solve_1(&mut input));
+    println!("{}", solve(&mut test_input));
+    println!("{}", solve(&mut test_input));
+    println!("{}", solve(&mut input));
+    println!("{}", solve(&mut input));
 }
