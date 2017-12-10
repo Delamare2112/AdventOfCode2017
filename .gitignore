@@ -3,3 +3,5 @@
 *Cargo.lock
 **/*.rs.bk
 *.iml
+*CMakeLists.txt
+*cmake-build-*
