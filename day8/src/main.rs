@@ -20,8 +20,9 @@ fn compare(a: isize, b: isize, token: &str) -> bool {
     }
 }
 
-fn interpret(input: &String) -> SystemState {
+fn interpret(input: &String) -> (SystemState, isize) {
     let mut system = SystemState::new();
+    let mut max_ever = 0isize;
     let re = Regex::new(r"([a-z]+) (dec|inc) (-?\d+) if ([a-z]+) ([<=!>]+) (-?\d+)").unwrap();
     for cap in re.captures_iter(input.as_str()) {
         let a = *system.entry(String::from(&cap[4])).or_insert(0);
@@ -35,9 +36,12 @@ fn interpret(input: &String) -> SystemState {
             else {
                 *dest -= src;
             }
+            if *dest > max_ever {
+                max_ever = *dest;
+            }
         }
     }
-    system
+    (system, max_ever)
 }
 
 fn find_largest_register_value(system: &SystemState) -> isize {
@@ -49,5 +53,7 @@ fn main() {
     let mut file = BufReader::new(file);
     let mut contents = String::new();
     file.read_to_string(&mut contents).expect("the file could not be read to a string.");
-    println!("{}", find_largest_register_value(&interpret(&contents)));
+    let result = interpret(&contents);
+    println!("largest end: {}", find_largest_register_value(&result.0));
+    println!("largest ever: {}", result.1);
 }
