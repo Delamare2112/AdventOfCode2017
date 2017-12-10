@@ -2,8 +2,9 @@ use std::io::BufReader;
 use std::io::prelude::*;
 use std::fs::File;
 
-fn calc_score(input: &String) -> usize {
+fn calc_score(input: &String) -> (usize, usize) {
     let mut score = 0usize;
+    let mut garbage = 0usize;
     let mut curl_level = 0usize;
     let mut in_garbage = false;
     let mut skip = false;
@@ -13,7 +14,7 @@ fn calc_score(input: &String) -> usize {
         } else if c == '!' {
             skip = true;
         } else if in_garbage && c != '>' {
-            continue;
+            garbage += 1;
         } else if c == '>' {
             in_garbage = false;
         } else if c == '<' {
@@ -25,7 +26,7 @@ fn calc_score(input: &String) -> usize {
             curl_level -= 1;
         }
     }
-    score
+    (score, garbage)
 }
 
 fn main() {
@@ -34,6 +35,6 @@ fn main() {
     let mut contents = String::new();
     file.read_to_string(&mut contents).expect("failed to read file into string.");
 
-    println!("test: {}", calc_score(&String::from("{{<a!>},{<a!>},{<a!>},{<ab>}}")));
-    println!("score: {}", calc_score(&contents));
+    let result = calc_score(&contents);
+    println!("score: {}, garbage: {}", result.0, result.1);
 }
