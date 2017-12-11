@@ -1,52 +1,46 @@
 struct Input {
     sequence_size: usize,
-    lengths: Vec<usize>
+    lengths: Vec<u8>
 }
 
-fn reverse_slice(start: usize, end: usize, vec: &mut Vec<usize>) {
-    let mut a = start;
-    let mut b = end;
-    let mut i = if start > end {
-        ((vec.len()-start)+end+1)
-    }else{
-        end-start
-    } / 2;
-    while i > 0 {
-        vec.swap(a,b);
-        b = if b == 0 { vec.len() - 1 } else { b - 1 };
-        a = if a >= vec.len()-1 { 0 } else { a + 1 };
-        i -= 1;
-    }
-}
-
-fn hash(input: &Input) -> Vec<usize> {
+fn sparse_hash(input: &Input, rounds: usize) -> Vec<usize> {
     let mut list: Vec<usize> = (0..input.sequence_size).collect();
     let mut i = 0usize;
     let mut skip_size = 0usize;
-    for len in input.lengths.iter() {
-        if *len != 0 {
-            let mut end_of_slice = (i + len) - 1;
-            if end_of_slice >= list.len() {
-                end_of_slice = end_of_slice - list.len();
+    let len = list.len();
+    for _round in 0..rounds {
+        for length in input.lengths.iter() {
+            for mid in 0..(length / 2) {
+                list.swap((i + mid as usize) % len, (i + *length as usize - mid as usize - 1) % len);
             }
-            reverse_slice(i, end_of_slice, &mut list);
+
+            i += *length as usize + skip_size;
+            skip_size += 1;
         }
-        i += len + skip_size;
-        while i >= list.len() {
-            i = i - list.len();
-        }
-        skip_size += 1;
     }
     list
 }
 
-fn checksum(x: &Vec<usize>) -> usize {
-    x[0] * x[1]
+fn dense_hash(sparse: &Vec<usize>) -> String {
+    let mut knot_hash = String::new();
+    for block in sparse.chunks(16) {
+        let mut xored = 0u8;
+        for num in block {
+            xored ^= *num as u8;
+        }
+        let mut new_str = format!("{:x}", xored);
+        if new_str.len() < 2 {
+            new_str.insert(0, '0');
+        }
+        knot_hash += new_str.as_str();
+    }
+    knot_hash
 }
 
 fn main() {
-    let test_input = Input {sequence_size: 5, lengths: vec!(3, 4, 1, 5)};
-    let input = Input {sequence_size: 256, lengths: vec!(120,93,0,90,5,80,129,74,1,165,204,255,254,2,50,113)};
-    println!("test check: {}", checksum(&hash(&test_input)));
-    println!("input check: {}", checksum(&hash(&input)));
+    let mut salt = vec!(17, 31, 73, 47, 23);
+    let mut input_2_len = "120,93,0,90,5,80,129,74,1,165,204,255,254,2,50,113".as_bytes().to_vec();
+    input_2_len.append(&mut salt);
+    let input_2 = Input {sequence_size: 256, lengths: input_2_len};
+    println!("hash: {}", dense_hash(&sparse_hash(&input_2, 64)));
 }
