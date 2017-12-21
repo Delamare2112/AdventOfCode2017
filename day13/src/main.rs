@@ -3,7 +3,7 @@ use std::fs::File;
 use std::str::FromStr;
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 struct Scanner {
     range: usize,
     scan_index: usize,
@@ -37,12 +37,14 @@ fn parse_input(input: &String) -> (HashMap<usize, Scanner>, usize) {
     (scanners, max_depth)
 }
 
-fn get_severity(scanners: &mut HashMap<usize, Scanner>, max_depth: usize) -> usize {
+fn get_severity(scanners: &mut HashMap<usize, Scanner>, max_depth: usize) -> (usize, bool) {
     let mut severity = 0usize;
+    let mut caught = false;
     for depth in 0..max_depth+1 {
         { // scoping for borrow
             let e = scanners.get(&depth);
             if e.is_some() && e.unwrap().scan_index == 0 {
+                caught = true;
                 severity += depth * e.unwrap().range;
             }
         }
@@ -50,7 +52,18 @@ fn get_severity(scanners: &mut HashMap<usize, Scanner>, max_depth: usize) -> usi
             scanner.step();
         }
     }
-    severity
+    (severity, caught)
+}
+
+fn find_delay(scanners: &mut HashMap<usize, Scanner>, max_depth: usize) -> usize {
+    let mut delay = 0usize;
+    while get_severity(&mut scanners.clone(), max_depth).1 {
+        delay += 1;
+        for (_, scanner) in scanners.iter_mut() {
+            scanner.step();
+        }
+    }
+    delay
 }
 
 fn main() {
@@ -58,7 +71,9 @@ fn main() {
     let mut file = BufReader::new(file);
     let mut input = String::new();
     file.read_to_string(&mut input).unwrap();
-    let mut input = parse_input(&input);
+    let mut input1 = parse_input(&input);
+    let mut input2 = input1.clone();
 
-    println!("{}", get_severity(&mut input.0, input.1));
+    println!("{}", get_severity(&mut input1.0, input1.1).0);
+    println!("{}", find_delay(&mut input2.0, input2.1));
 }
