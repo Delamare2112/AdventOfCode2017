@@ -29,16 +29,30 @@ fn solve_1(mut vec: &mut Vec<char>, input: &String) {
             vec.swap(a, b);
         }
     }
-    let s: String = vec.iter().collect();
-    println!("{}", s);
+}
+
+fn solve_2(mut vec: &mut Vec<char>, input: &String) -> String {
+    let mut results: Vec<String> = vec![vec.clone().iter().collect()];
+    loop {
+        solve_1(&mut vec, &input);
+        let x: String = vec.iter().collect();
+        if x == "abcdefghijklmnop" {
+            return results[1000000000 % results.len()].clone();
+        }
+        results.push(x);
+    }
 }
 
 fn main() {
-    let vec: Vec<char> = vec!('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p');
+    let mut vec: Vec<char> = vec!('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p');
     let file = File::open("input.txt").expect("cannot open input file");
     let mut file = BufReader::new(file);
     let mut input = String::new();
     file.read_to_string(&mut input).unwrap();
 
-    solve_1(&mut vec.clone(), &input);
+    let mut vec1 = vec.clone();
+    solve_1(&mut vec1, &input);
+    let s: String = vec1.iter().collect();
+    println!("{}", s);
+    println!("{}", solve_2(&mut vec, &input));
 }
